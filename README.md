@@ -1,4 +1,4 @@
-A very simple asynchronous queue exposed over HTTP.
+A very simple asynchronous queue exposed over a HTTP API.
 
 ## Usage
 
