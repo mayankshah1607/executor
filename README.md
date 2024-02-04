@@ -17,7 +17,7 @@ make build
 bin/executor
 
 # (open separate terminal window) Watch the internal queue status
-watch 'curl -X GET localhost:8080/tasks | jq'
+watch 'curl s -X GET localhost:8080/tasks | jq'
 
 # (open separate terminal window) Add 5 tasks.
 curl --location 'localhost:8080/tasks' \
