@@ -53,7 +53,6 @@ func (s *Service) AddTasks(tasks map[string]int32) error {
 	// Add each task to execution.
 	for id, dur := range tasks {
 		id := id
-		t := time.Second * time.Duration(dur)
 
 		// (Critical section) Check if this task is already in our executor?
 		{
@@ -70,6 +69,7 @@ func (s *Service) AddTasks(tasks map[string]int32) error {
 		}
 
 		log := s.log.With().Str("id", id).Logger()
+		t := time.Millisecond * time.Duration(dur)
 		// Add task to the executor.
 		if err := s.executor.AddTask(func() {
 			log.Info().Msg("Started task")
