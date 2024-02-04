@@ -71,12 +71,14 @@ func (s *Service) AddTasks(tasks map[string]int32) error {
 
 		log := s.log.With().Str("id", id).Logger()
 		// Add task to the executor.
-		s.executor.AddTask(func() {
+		if err := s.executor.AddTask(func() {
 			log.Info().Msg("Started task")
-			defer log.Info().Msg("Finished task")
 
-			s.startedNotifs <- id                       // notify that this task is started.
-			defer func() { s.completionNotifs <- id }() // notify when this task is completed.
+			s.startedNotifs <- id // notify that this task is started.
+			defer func() {
+				s.completionNotifs <- id // notify when this task is completed.
+				log.Info().Msg("Finished task")
+			}()
 
 			t := time.NewTimer(t)
 			defer t.Stop()
@@ -90,7 +92,9 @@ func (s *Service) AddTasks(tasks map[string]int32) error {
 					return
 				}
 			}
-		})
+		}); err != nil {
+			return err
+		}
 	}
 	return nil
 }

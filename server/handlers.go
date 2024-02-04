@@ -17,6 +17,7 @@ func (s *Server) handleTaskSubmission(w http.ResponseWriter, req *http.Request) 
 	if err := s.service.AddTasks(tasks); err != nil {
 		s.log.Err(err).Msg("failed to AddTasks")
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 		return
 	}
 }

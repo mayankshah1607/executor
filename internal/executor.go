@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"sync/atomic"
 )
 
@@ -8,7 +9,8 @@ import (
 type Task func()
 
 type Executor struct {
-	queue chan Task
+	queue     chan Task
+	queueSize int
 
 	// Atomic counters to keep track of internal stats.
 	// Mostly used for testing, but can also be used for other purposes.
@@ -20,14 +22,21 @@ type Executor struct {
 // If at anytime more than `queueSize` number of tasks are provided, adding to the executor becomes a blocking operation.
 func NewExecutor(queueSize int) *Executor {
 	return &Executor{
-		queue: make(chan Task, queueSize),
+		queueSize: queueSize,
+		queue:     make(chan Task, queueSize),
 	}
 }
 
+var MaxQueueCapacity = errors.New("Queue is operating at maximum capacity")
+
 // AddTask enqueues a new task to the executor.
 // This call will be a blocking operation if the size of the queue is exceeded.
-func (e *Executor) AddTask(t Task) {
+func (e *Executor) AddTask(t Task) error {
+	if len(e.queue) == e.queueSize {
+		return MaxQueueCapacity
+	}
 	e.queue <- t
+	return nil
 }
 
 // Stop stops all the go routines in this executor.
