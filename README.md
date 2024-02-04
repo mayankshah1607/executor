@@ -16,13 +16,14 @@ make build
 # Run the binary
 bin/executor
 
-# (In a separate terminal window) Add tasks to the executor
+# (open separate terminal window) Watch the internal queue status
+watch 'curl -X GET localhost:8080/tasks | jq'
+
+# (open separate terminal window) Add 5 tasks.
 curl --location 'localhost:8080/tasks' \
     --header 'Content-Type: application/json' \
     --data '{"task-1": 10000, "task-2": 15000, "task-3": 9000, "task-4": 8000, "task-5": 15000}'
 
-# watch the internal queue state in real-time
-watch 'curl -X GET localhost:8080/tasks | jq'
 ```
 
 ### Tweaking parameters
